@@ -25,6 +25,8 @@ class Paper:
 
 def load_proxy_config():
     if os.getenv("USE_PROXY") != "1":
+        os.environ["no_proxy"] = "*"
+        os.environ["NO_PROXY"] = "*"
         return {"http": None, "https": None}
 
     http_proxy = os.getenv("http_proxy") or os.getenv("all_proxy")
