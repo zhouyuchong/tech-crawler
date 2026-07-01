@@ -124,8 +124,8 @@ class PipelineTest(unittest.TestCase):
 
             expected_trending_pdf = root / "data" / "papers" / "trending" / "Trending Paper.pdf"
             expected_daily_pdf = root / "data" / "papers" / "20260701" / "Daily Paper.pdf"
-            summarize.assert_any_call(expected_trending_pdf, delay_seconds=5, proxies=None)
-            summarize.assert_any_call(expected_daily_pdf, delay_seconds=5, proxies=None)
+            summarize.assert_any_call(expected_trending_pdf, delay_seconds=5, proxies={"http": None, "https": None})
+            summarize.assert_any_call(expected_daily_pdf, delay_seconds=5, proxies={"http": None, "https": None})
 
 
 if __name__ == "__main__":

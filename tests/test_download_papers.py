@@ -76,7 +76,7 @@ class DownloadPapersTest(unittest.TestCase):
         with patch.dict("os.environ", env, clear=True):
             proxies = download_papers.load_proxy_config()
 
-        self.assertIsNone(proxies)
+        self.assertEqual(proxies, {"http": None, "https": None})
 
     def test_download_paper_uses_title_filename_proxy_and_delay(self):
         paper = download_papers.Paper(

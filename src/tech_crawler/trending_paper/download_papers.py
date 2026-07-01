@@ -25,7 +25,7 @@ class Paper:
 
 def load_proxy_config():
     if os.getenv("USE_PROXY") != "1":
-        return None
+        return {"http": None, "https": None}
 
     http_proxy = os.getenv("http_proxy") or os.getenv("all_proxy")
     https_proxy = os.getenv("https_proxy") or os.getenv("all_proxy")
@@ -34,7 +34,7 @@ def load_proxy_config():
         proxies["http"] = http_proxy
     if https_proxy:
         proxies["https"] = https_proxy
-    return proxies or None
+    return proxies or {"http": None, "https": None}
 
 
 def safe_paper_filename(title, extension=".pdf", max_stem_length=180):
