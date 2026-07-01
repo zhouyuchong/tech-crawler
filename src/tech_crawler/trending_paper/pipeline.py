@@ -109,7 +109,9 @@ def run_trending_paper_job(root_dir, job_date=None):
     trending_dir = download_papers.trending_output_dir(root_dir)
     trending_downloaded_count = 0
     trending_summarized_count = 0
-    for paper in trending_papers:
+    total_trending = len(trending_papers)
+    for index, paper in enumerate(trending_papers, start=1):
+        LOGGER.info("[Trending %s/%s] Downloading paper: %s", index, total_trending, paper.title)
         try:
             pdf_path = download_papers.download_paper(
                 paper,
@@ -124,6 +126,7 @@ def run_trending_paper_job(root_dir, job_date=None):
             LOGGER.exception("Failed to download trending paper: %s", paper.title)
             continue
 
+        LOGGER.info("[Trending %s/%s] Summarizing paper: %s", index, total_trending, paper.title)
         try:
             summary_path = read_papers.summarize_pdf(
                 pdf_path,
@@ -143,7 +146,9 @@ def run_trending_paper_job(root_dir, job_date=None):
 
     downloaded_count = 0
     summarized_count = 0
-    for paper in daily_papers:
+    total_daily = len(daily_papers)
+    for index, paper in enumerate(daily_papers, start=1):
+        LOGGER.info("[Daily %s/%s] Downloading paper: %s", index, total_daily, paper.title)
         try:
             pdf_path = download_papers.download_paper(
                 paper,
@@ -158,6 +163,7 @@ def run_trending_paper_job(root_dir, job_date=None):
             LOGGER.exception("Failed to download paper: %s", paper.title)
             continue
 
+        LOGGER.info("[Daily %s/%s] Summarizing paper: %s", index, total_daily, paper.title)
         try:
             summary_path = read_papers.summarize_pdf(
                 pdf_path,
