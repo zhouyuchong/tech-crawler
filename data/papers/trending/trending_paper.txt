@@ -1,0 +1,50 @@
+Unlimited OCR Works	https://huggingface.co/papers/2606.23050	https://arxiv.org/pdf/2606.23050.pdf
+MinerU2.5: A Decoupled Vision-Language Model for Efficient High-Resolution Document Parsing	https://huggingface.co/papers/2509.22186	https://arxiv.org/pdf/2509.22186.pdf
+Geometric Context Transformer for Streaming 3D Reconstruction	https://huggingface.co/papers/2604.14141	https://arxiv.org/pdf/2604.14141.pdf
+TradingAgents: Multi-Agents LLM Financial Trading Framework	https://huggingface.co/papers/2412.20138	https://arxiv.org/pdf/2412.20138.pdf
+SkillOpt: Executive Strategy for Self-Evolving Agent Skills	https://huggingface.co/papers/2605.23904	https://arxiv.org/pdf/2605.23904.pdf
+EverMemOS: A Self-Organizing Memory Operating System for Structured Long-Horizon Reasoning	https://huggingface.co/papers/2601.02163	https://arxiv.org/pdf/2601.02163.pdf
+A decoder-only foundation model for time-series forecasting	https://huggingface.co/papers/2310.10688	https://arxiv.org/pdf/2310.10688.pdf
+Efficient Memory Management for Large Language Model Serving with PagedAttention	https://huggingface.co/papers/2309.06180	https://arxiv.org/pdf/2309.06180.pdf
+olmOCR: Unlocking Trillions of Tokens in PDFs with Vision Language Models	https://huggingface.co/papers/2502.18443	https://arxiv.org/pdf/2502.18443.pdf
+PaddleOCR-VL-1.6: Expanding the Frontier of Document Parsing with Under-Optimized Region Refinement and Progressive Post-Training	https://huggingface.co/papers/2606.03264	https://arxiv.org/pdf/2606.03264.pdf
+OpenDevin: An Open Platform for AI Software Developers as Generalist Agents	https://huggingface.co/papers/2407.16741	https://arxiv.org/pdf/2407.16741.pdf
+GLM-5: from Vibe Coding to Agentic Engineering	https://huggingface.co/papers/2602.15763	https://arxiv.org/pdf/2602.15763.pdf
+Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent	https://huggingface.co/papers/2606.30616	https://arxiv.org/pdf/2606.30616.pdf
+Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory	https://huggingface.co/papers/2504.19413	https://arxiv.org/pdf/2504.19413.pdf
+LlamaFactory: Unified Efficient Fine-Tuning of 100+ Language Models	https://huggingface.co/papers/2403.13372	https://arxiv.org/pdf/2403.13372.pdf
+Kronos: A Foundation Model for the Language of Financial Markets	https://huggingface.co/papers/2508.02739	https://arxiv.org/pdf/2508.02739.pdf
+Qwen-AgentWorld: Language World Models for General Agents	https://huggingface.co/papers/2606.24597	https://arxiv.org/pdf/2606.24597.pdf
+Multi-module GRPO: Composing Policy Gradients and Prompt Optimization for Language Model Programs	https://huggingface.co/papers/2508.04660	https://arxiv.org/pdf/2508.04660.pdf
+SmolDocling: An ultra-compact vision-language model for end-to-end multi-modal document conversion	https://huggingface.co/papers/2503.11576	https://arxiv.org/pdf/2503.11576.pdf
+OpenRath: Session-Centered Runtime State for Agent Systems	https://huggingface.co/papers/2606.19409	https://arxiv.org/pdf/2606.19409.pdf
+Memanto: Typed Semantic Memory with Information-Theoretic Retrieval for Long-Horizon Agents	https://huggingface.co/papers/2604.22085	https://arxiv.org/pdf/2604.22085.pdf
+DataFlow: An LLM-Driven Framework for Unified Data Preparation and Workflow Automation in the Era of Data-Centric AI	https://huggingface.co/papers/2512.16676	https://arxiv.org/pdf/2512.16676.pdf
+JoyAI-VL-Interaction: Real-Time Vision-Language Interaction Intelligence	https://huggingface.co/papers/2606.14777	https://arxiv.org/pdf/2606.14777.pdf
+Zep: A Temporal Knowledge Graph Architecture for Agent Memory	https://huggingface.co/papers/2501.13956	https://arxiv.org/pdf/2501.13956.pdf
+Eagle: Exploring The Design Space for Multimodal LLMs with Mixture of Encoders	https://huggingface.co/papers/2408.15998	https://arxiv.org/pdf/2408.15998.pdf
+Qwen-RobotManip Technical Report: Alignment Unlocks Scale for Robotic Manipulation Foundation Models	https://huggingface.co/papers/2606.17846	https://arxiv.org/pdf/2606.17846.pdf
+ARIS: Autonomous Research via Adversarial Multi-Agent Collaboration	https://huggingface.co/papers/2605.03042	https://arxiv.org/pdf/2605.03042.pdf
+LiveEdit: Towards Real-Time Diffusion-Based Streaming Video Editing	https://huggingface.co/papers/2606.26740	https://arxiv.org/pdf/2606.26740.pdf
+OmniFlatten: An End-to-end GPT Model for Seamless Voice Conversation	https://huggingface.co/papers/2410.17799	https://arxiv.org/pdf/2410.17799.pdf
+LightRAG: Simple and Fast Retrieval-Augmented Generation	https://huggingface.co/papers/2410.05779	https://arxiv.org/pdf/2410.05779.pdf
+MemSlides: A Hierarchical Memory Driven Agent Framework for Personalized Slide Generation with Multi-turn Local Revision	https://huggingface.co/papers/2606.17162	https://arxiv.org/pdf/2606.17162.pdf
+AI-Trader: Benchmarking Autonomous Agents in Real-Time Financial Markets	https://huggingface.co/papers/2512.10971	https://arxiv.org/pdf/2512.10971.pdf
+Transformer Explainer: Interactive Learning of Text-Generative Models	https://huggingface.co/papers/2408.04619	https://arxiv.org/pdf/2408.04619.pdf
+Efficient Guided Generation for Large Language Models	https://huggingface.co/papers/2307.09702	https://arxiv.org/pdf/2307.09702.pdf
+Ultralytics YOLO26: Unified Real-Time End-to-End Vision Models	https://huggingface.co/papers/2606.03748	https://arxiv.org/pdf/2606.03748.pdf
+COLLEAGUE.SKILL: Automated AI Skill Generation via Expert Knowledge Distillation	https://huggingface.co/papers/2605.31264	https://arxiv.org/pdf/2605.31264.pdf
+VibeVoice Technical Report	https://huggingface.co/papers/2508.19205	https://arxiv.org/pdf/2508.19205.pdf
+Kairos: A Native World Model Stack for Physical AI	https://huggingface.co/papers/2606.16533	https://arxiv.org/pdf/2606.16533.pdf
+Very Large-Scale Multi-Agent Simulation in AgentScope	https://huggingface.co/papers/2407.17789	https://arxiv.org/pdf/2407.17789.pdf
+AgentScope 1.0: A Developer-Centric Framework for Building Agentic Applications	https://huggingface.co/papers/2508.16279	https://arxiv.org/pdf/2508.16279.pdf
+LMCache: An Efficient KV Cache Layer for Enterprise-Scale LLM Inference	https://huggingface.co/papers/2510.09665	https://arxiv.org/pdf/2510.09665.pdf
+ViQ: Text-Aligned Visual Quantized Representations at Any Resolution	https://huggingface.co/papers/2606.27313	https://arxiv.org/pdf/2606.27313.pdf
+IndexTTS: An Industrial-Level Controllable and Efficient Zero-Shot Text-To-Speech System	https://huggingface.co/papers/2502.05512	https://arxiv.org/pdf/2502.05512.pdf
+JetSpec: Breaking the Scaling Ceiling of Speculative Decoding with Parallel Tree Drafting	https://huggingface.co/papers/2606.18394	https://arxiv.org/pdf/2606.18394.pdf
+Cosmos 3: Omnimodal World Models for Physical AI	https://huggingface.co/papers/2606.02800	https://arxiv.org/pdf/2606.02800.pdf
+PDFMathTranslate: Scientific Document Translation Preserving Layouts	https://huggingface.co/papers/2507.03009	https://arxiv.org/pdf/2507.03009.pdf
+Agent READMEs: An Empirical Study of Context Files for Agentic Coding	https://huggingface.co/papers/2511.12884	https://arxiv.org/pdf/2511.12884.pdf
+Terrain Diffusion: A Diffusion-Based Successor to Perlin Noise in Infinite, Real-Time Terrain Generation	https://huggingface.co/papers/2512.08309	https://arxiv.org/pdf/2512.08309.pdf
+Toward Generalist Autonomous Research via Hypothesis-Tree Refinement	https://huggingface.co/papers/2606.11926	https://arxiv.org/pdf/2606.11926.pdf
+GenericAgent: A Token-Efficient Self-Evolving LLM Agent via Contextual Information Density Maximization (V1.0)	https://huggingface.co/papers/2604.17091	https://arxiv.org/pdf/2604.17091.pdf
