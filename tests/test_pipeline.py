@@ -99,13 +99,18 @@ class PipelineTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            pdf_path = root / "data" / "papers" / "20260701" / "Daily Paper.pdf"
+            
+            def download_side_effect(paper, output_dir, **kwargs):
+                return Path(output_dir) / f"{paper.title}.pdf"
+
             with patch.dict("os.environ", {}, clear=True):
                 with patch("tech_crawler.trending_paper.pipeline.crawler.fetch_papers", side_effect=[[trending_paper], [daily_paper]]) as fetch:
-                    with patch("tech_crawler.trending_paper.pipeline.download_papers.download_paper", return_value=pdf_path) as download:
+                    with patch("tech_crawler.trending_paper.pipeline.download_papers.download_paper", side_effect=download_side_effect) as download:
                         with patch("tech_crawler.trending_paper.pipeline.read_papers.summarize_pdf") as summarize:
                             result = pipeline.run_trending_paper_job(root, "2026-07-01")
 
+            self.assertEqual(result.trending_downloaded_count, 1)
+            self.assertEqual(result.trending_summarized_count, 1)
             self.assertEqual(result.downloaded_count, 1)
             self.assertEqual(result.summarized_count, 1)
             self.assertEqual(
@@ -114,8 +119,13 @@ class PipelineTest(unittest.TestCase):
             )
             self.assertTrue((root / "data" / "papers" / "20260701" / "paper.txt").exists())
             self.assertEqual(fetch.call_count, 2)
-            download.assert_called_once()
-            summarize.assert_called_once_with(pdf_path, delay_seconds=5, proxies=None)
+            self.assertEqual(download.call_count, 2)
+            self.assertEqual(summarize.call_count, 2)
+
+            expected_trending_pdf = root / "data" / "papers" / "trending" / "Trending Paper.pdf"
+            expected_daily_pdf = root / "data" / "papers" / "20260701" / "Daily Paper.pdf"
+            summarize.assert_any_call(expected_trending_pdf, delay_seconds=5, proxies=None)
+            summarize.assert_any_call(expected_daily_pdf, delay_seconds=5, proxies=None)
 
 
 if __name__ == "__main__":

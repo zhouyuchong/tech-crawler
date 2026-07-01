@@ -114,7 +114,7 @@ def summarize_pdf(
 ):
     pdf_path = Path(pdf_path)
     output_path = pdf_path.with_suffix(".md")
-    if output_path.exists():
+    if output_path.exists() and output_path.stat().st_size > 0:
         LOGGER.info("Markdown already exists, skipping summary: %s", output_path)
         return output_path
 

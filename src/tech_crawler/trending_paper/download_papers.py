@@ -70,6 +70,10 @@ def daily_output_dir(root_dir, job_date):
     return Path(root_dir) / "data" / "papers" / date_slug
 
 
+def trending_output_dir(root_dir):
+    return Path(root_dir) / "data" / "papers" / "trending"
+
+
 def download_paper(
     paper,
     output_dir,
@@ -81,11 +85,14 @@ def download_paper(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     default_output_path = output_dir / safe_paper_filename(paper.title, extension=".pdf")
-    if default_output_path.exists():
+    if default_output_path.exists() and default_output_path.stat().st_size > 0:
         LOGGER.info("PDF already exists, skipping download: %s", default_output_path)
         return default_output_path
 
-    output_path = unique_output_path(output_dir, paper.title, paper.arxiv_id, extension=".pdf")
+    if default_output_path.exists() and default_output_path.stat().st_size == 0:
+        output_path = default_output_path
+    else:
+        output_path = unique_output_path(output_dir, paper.title, paper.arxiv_id, extension=".pdf")
 
     response = None
     for attempt in range(1, max_attempts + 1):

@@ -48,3 +48,4 @@ Agent READMEs: An Empirical Study of Context Files for Agentic Coding	https://hu
 Terrain Diffusion: A Diffusion-Based Successor to Perlin Noise in Infinite, Real-Time Terrain Generation	https://huggingface.co/papers/2512.08309	https://arxiv.org/pdf/2512.08309.pdf
 Toward Generalist Autonomous Research via Hypothesis-Tree Refinement	https://huggingface.co/papers/2606.11926	https://arxiv.org/pdf/2606.11926.pdf
 GenericAgent: A Token-Efficient Self-Evolving LLM Agent via Contextual Information Density Maximization (V1.0)	https://huggingface.co/papers/2604.17091	https://arxiv.org/pdf/2604.17091.pdf
+RAG-Anything: All-in-One RAG Framework	https://huggingface.co/papers/2510.12323	https://arxiv.org/pdf/2510.12323.pdf

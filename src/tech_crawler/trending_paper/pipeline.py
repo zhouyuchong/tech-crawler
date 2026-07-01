@@ -16,6 +16,8 @@ LOGGER = logging.getLogger(__name__)
 class JobResult:
     trending_count: int
     trending_added_count: int
+    trending_downloaded_count: int
+    trending_summarized_count: int
     daily_count: int
     downloaded_count: int
     summarized_count: int
@@ -104,6 +106,37 @@ def run_trending_paper_job(root_dir, job_date=None):
     index_path = root_dir / "data" / "papers" / "trending" / "trending_paper.txt"
     trending_added_count = append_new_trending_papers(index_path, trending_papers)
 
+    trending_dir = download_papers.trending_output_dir(root_dir)
+    trending_downloaded_count = 0
+    trending_summarized_count = 0
+    for paper in trending_papers:
+        try:
+            pdf_path = download_papers.download_paper(
+                paper,
+                trending_dir,
+                proxies=proxies,
+                delay_seconds=download_delay,
+                max_attempts=download_max_attempts,
+                retry_delay_seconds=download_retry_delay,
+            )
+            trending_downloaded_count += 1
+        except requests.RequestException:
+            LOGGER.exception("Failed to download trending paper: %s", paper.title)
+            continue
+
+        try:
+            summary_path = read_papers.summarize_pdf(
+                pdf_path,
+                delay_seconds=llm_delay,
+                proxies=proxies,
+            )
+        except (RuntimeError, requests.RequestException, OSError):
+            LOGGER.exception("Failed to summarize trending paper: %s", pdf_path)
+            continue
+
+        if summary_path is not None:
+            trending_summarized_count += 1
+
     daily_papers = crawler.fetch_papers(daily_url, proxies=proxies, delay_seconds=crawl_delay)
     output_dir = download_papers.daily_output_dir(root_dir, job_date)
     write_daily_paper_file(output_dir, daily_papers)
@@ -139,9 +172,11 @@ def run_trending_paper_job(root_dir, job_date=None):
             summarized_count += 1
 
     LOGGER.info(
-        "Finished trending paper job: trending=%s added=%s daily=%s downloaded=%s summarized=%s",
+        "Finished trending paper job: trending=%s added=%s trending_downloaded=%s trending_summarized=%s daily=%s downloaded=%s summarized=%s",
         len(trending_papers),
         trending_added_count,
+        trending_downloaded_count,
+        trending_summarized_count,
         len(daily_papers),
         downloaded_count,
         summarized_count,
@@ -149,6 +184,8 @@ def run_trending_paper_job(root_dir, job_date=None):
     return JobResult(
         trending_count=len(trending_papers),
         trending_added_count=trending_added_count,
+        trending_downloaded_count=trending_downloaded_count,
+        trending_summarized_count=trending_summarized_count,
         daily_count=len(daily_papers),
         downloaded_count=downloaded_count,
         summarized_count=summarized_count,

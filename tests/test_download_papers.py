@@ -41,6 +41,13 @@ class DownloadPapersTest(unittest.TestCase):
                 Path(tmpdir) / "data" / "papers" / "20260701",
             )
 
+    def test_trending_output_dir_uses_trending_under_data_papers(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            self.assertEqual(
+                download_papers.trending_output_dir(Path(tmpdir)),
+                Path(tmpdir) / "data" / "papers" / "trending",
+            )
+
     def test_proxy_config_respects_use_proxy_switch(self):
         env = {
             "USE_PROXY": "1",
@@ -149,6 +156,30 @@ class DownloadPapersTest(unittest.TestCase):
         self.assertEqual(path, existing)
         get.assert_not_called()
         sleep.assert_not_called()
+
+    def test_download_paper_does_not_skip_if_existing_pdf_is_empty(self):
+        paper = download_papers.Paper(
+            title="Readable Paper Title",
+            paper_url="https://huggingface.co/papers/2606.23050",
+            pdf_url="https://arxiv.org/pdf/2606.23050.pdf",
+            arxiv_id="2606.23050",
+        )
+        response = Mock()
+        response.iter_content.return_value = [b"pdf"]
+        response.raise_for_status.return_value = None
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir)
+            existing = output_dir / "Readable Paper Title.pdf"
+            existing.write_text("", encoding="utf-8") # Empty file
+            with patch("tech_crawler.trending_paper.download_papers.requests.get", return_value=response) as get:
+                with patch("tech_crawler.trending_paper.download_papers.time.sleep") as sleep:
+                     path = download_papers.download_paper(paper, output_dir, delay_seconds=0)
+
+            self.assertEqual(path, existing)
+            self.assertEqual(path.read_bytes(), b"pdf")
+            get.assert_called_once()
+            sleep.assert_not_called()
 
 
 if __name__ == "__main__":

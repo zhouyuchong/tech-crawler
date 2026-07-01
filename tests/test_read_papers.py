@@ -99,6 +99,29 @@ class ReadPapersTest(unittest.TestCase):
         call_llm.assert_not_called()
         sleep.assert_not_called()
 
+    def test_summarize_pdf_does_not_skip_if_existing_markdown_is_empty(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pdf_path = Path(tmpdir) / "Readable Paper.pdf"
+            pdf_path.write_bytes(b"%PDF")
+            markdown_path = Path(tmpdir) / "Readable Paper.md"
+            markdown_path.write_text("", encoding="utf-8") # Empty file
+
+            with patch("tech_crawler.trending_paper.read_papers.extract_pdf_text", return_value="paper text"):
+                with patch("tech_crawler.trending_paper.read_papers.call_llm", return_value="new summary") as call_llm:
+                    with patch("tech_crawler.trending_paper.read_papers.time.sleep") as sleep:
+                        output = read_papers.summarize_pdf(
+                            pdf_path,
+                            api_key="key",
+                            base_url="https://example.com/v1",
+                            model="model",
+                            delay_seconds=0,
+                        )
+
+            self.assertEqual(output, markdown_path)
+            self.assertEqual(output.read_text(encoding="utf-8"), "new summary\n")
+            call_llm.assert_called_once()
+            sleep.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()
