@@ -54,6 +54,16 @@ Backfill a specific date for daily papers:
 uv run tech-crawler --module today_paper --date 2026-07-01
 ```
 
+Query top papers by hotness from the database:
+
+```bash
+# Query top 10 trending papers
+uv run tech-crawler --module trending_paper --top 10
+
+# Query top 10 daily papers
+uv run tech-crawler --module today_paper --top 10
+```
+
 Recommended crontab shape:
 
 ```cron

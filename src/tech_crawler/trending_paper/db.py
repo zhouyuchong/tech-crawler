@@ -83,5 +83,29 @@ class PaperDatabase:
                 (update_time, paper_url)
             )
 
+    def get_top_papers(self, table_name, limit):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            f"""
+            SELECT paper_url, title, pdf_url, created_time, update_time, hotness
+            FROM {table_name}
+            ORDER BY hotness DESC, update_time DESC
+            LIMIT ?
+            """,
+            (limit,)
+        )
+        rows = cursor.fetchall()
+        return [
+            PaperRecord(
+                paper_url=row["paper_url"],
+                title=row["title"],
+                pdf_url=row["pdf_url"],
+                created_time=row["created_time"],
+                update_time=row["update_time"],
+                hotness=row["hotness"]
+            )
+            for row in rows
+        ]
+
     def close(self):
         self.conn.close()

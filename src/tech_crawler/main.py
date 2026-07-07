@@ -6,6 +6,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from tech_crawler.trending_paper import pipeline
+from tech_crawler.trending_paper.db import PaperDatabase
 
 
 LOGGER = logging.getLogger(__name__)
@@ -49,6 +50,12 @@ def parse_args(argv=None):
         default=None,
         help="Job date in YYYY-MM-DD format. Defaults to today.",
     )
+    parser.add_argument(
+        "--top",
+        type=int,
+        default=None,
+        help="Query top N papers by hotness from the database instead of running the crawler job.",
+    )
     return parser.parse_args(argv)
 
 
@@ -61,6 +68,39 @@ def main(argv=None):
     if args.module not in ("trending_paper", "today_paper"):
         LOGGER.error("Unsupported module: %s", args.module)
         return 2
+
+    if args.top is not None:
+        if args.top <= 0:
+            LOGGER.error("Invalid limit for --top: must be greater than 0.")
+            return 2
+        try:
+            db_path = root_dir / "data" / "papers" / "tech_crawler.db"
+            if not db_path.exists():
+                print("Database file does not exist yet. Please run the crawler at least once first.")
+                return 0
+
+            table_name = "trending_papers" if args.module == "trending_paper" else "daily_papers"
+            db = PaperDatabase(db_path)
+            try:
+                papers = db.get_top_papers(table_name, args.top)
+                if not papers:
+                    print(f"No papers found in database table: {table_name}")
+                    return 0
+
+                print(f"Top {args.top} papers by hotness in {table_name}:")
+                print("-" * 80)
+                for idx, paper in enumerate(papers, start=1):
+                    print(f"{idx:2d}. [Hotness: {paper.hotness}] {paper.title}")
+                    print(f"    URL: {paper.paper_url}")
+                    print(f"    PDF: {paper.pdf_url}")
+                    print(f"    Created: {paper.created_time} | Updated: {paper.update_time}")
+                    print("-" * 80)
+            finally:
+                db.close()
+        except Exception:
+            LOGGER.exception("Failed to query top papers from database.")
+            return 1
+        return 0
 
     try:
         if args.module == "trending_paper":
