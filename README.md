@@ -64,10 +64,10 @@ Recommended crontab shape:
 
 ## Data Layout
 
-- `data/papers/trending/trending_paper.txt`: cumulative trending paper index (includes update time).
+- `data/papers/tech_crawler.db`: local SQLite database containing `trending_papers` and `daily_papers` registries (automatic migration from legacy text files).
 - `data/papers/trending/YYYY-Www/*.pdf`: weekly trending paper PDFs.
 - `data/papers/trending/YYYY-Www/*.md`: weekly trending paper summaries.
-- `data/papers/YYYYMMDD/paper.txt`: daily paper metadata (includes update time).
+- `data/papers/YYYYMMDD/paper.txt`: daily paper metadata.
 - `data/papers/YYYYMMDD/*.pdf`: downloaded daily paper PDFs.
 - `data/papers/YYYYMMDD/*.md`: per-paper daily summaries.
 - `data/logs/tech_crawler.log`: runtime logs.
