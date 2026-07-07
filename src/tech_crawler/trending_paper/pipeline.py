@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 from dataclasses import dataclass
@@ -38,8 +39,10 @@ def today_iso():
     return date.today().isoformat()
 
 
-def paper_record(paper):
-    return f"{paper.title}\t{paper.paper_url}\t{paper.pdf_url}"
+def paper_record(paper, update_time=None):
+    if update_time is None:
+        update_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return f"{paper.title}\t{paper.paper_url}\t{paper.pdf_url}\t{update_time}"
 
 
 def existing_paper_urls(index_path):
@@ -55,7 +58,7 @@ def existing_paper_urls(index_path):
     return urls
 
 
-def append_new_trending_papers(index_path, papers):
+def append_new_trending_papers(index_path, papers, update_time=None):
     index_path = Path(index_path)
     index_path.parent.mkdir(parents=True, exist_ok=True)
     seen_urls = existing_paper_urls(index_path)
@@ -67,26 +70,28 @@ def append_new_trending_papers(index_path, papers):
 
     with index_path.open("a", encoding="utf-8") as output:
         for paper in new_papers:
-            output.write(paper_record(paper) + "\n")
+            output.write(paper_record(paper, update_time=update_time) + "\n")
     LOGGER.info("Appended %s new trending papers to %s", len(new_papers), index_path)
     return len(new_papers)
 
 
-def write_daily_paper_file(output_dir, papers):
+def write_daily_paper_file(output_dir, papers, update_time=None):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     paper_file = output_dir / "paper.txt"
     paper_file.write_text(
-        "".join(paper_record(paper) + "\n" for paper in papers),
+        "".join(paper_record(paper, update_time=update_time) + "\n" for paper in papers),
         encoding="utf-8",
     )
     LOGGER.info("Saved daily paper metadata: %s", paper_file)
     return paper_file
 
 
-def run_trending_paper_job(root_dir, job_date=None):
+def run_trending_paper_job(root_dir, job_date=None, update_time=None):
     root_dir = Path(root_dir)
     job_date = job_date or today_iso()
+    if update_time is None:
+        update_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     proxies = download_papers.load_proxy_config()
     crawl_delay = env_int("CRAWL_DELAY_SECONDS", crawler.DEFAULT_CRAWL_DELAY_SECONDS)
     download_delay = env_int("DOWNLOAD_DELAY_SECONDS", download_papers.DEFAULT_DOWNLOAD_DELAY_SECONDS)
@@ -98,15 +103,13 @@ def run_trending_paper_job(root_dir, job_date=None):
     llm_delay = env_int("LLM_DELAY_SECONDS", read_papers.DEFAULT_LLM_DELAY_SECONDS)
 
     trending_url = os.getenv("TRENDING_PAPER_URL", crawler.DEFAULT_TRENDING_PAPER_URL)
-    daily_base_url = os.getenv("TRENDING_PAPER_DAILY_URL", crawler.DEFAULT_DAILY_PAPER_URL)
-    daily_url = crawler.daily_paper_url(daily_base_url, job_date)
 
     LOGGER.info("Starting trending paper job for %s", job_date)
     trending_papers = crawler.fetch_papers(trending_url, proxies=proxies, delay_seconds=crawl_delay)
     index_path = root_dir / "data" / "papers" / "trending" / "trending_paper.txt"
-    trending_added_count = append_new_trending_papers(index_path, trending_papers)
+    trending_added_count = append_new_trending_papers(index_path, trending_papers, update_time=update_time)
 
-    trending_dir = download_papers.trending_output_dir(root_dir)
+    trending_dir = download_papers.trending_output_dir(root_dir, job_date)
     trending_downloaded_count = 0
     trending_summarized_count = 0
     total_trending = len(trending_papers)
@@ -140,9 +143,46 @@ def run_trending_paper_job(root_dir, job_date=None):
         if summary_path is not None:
             trending_summarized_count += 1
 
+    LOGGER.info(
+        "Finished trending paper job: trending=%s added=%s trending_downloaded=%s trending_summarized=%s",
+        len(trending_papers),
+        trending_added_count,
+        trending_downloaded_count,
+        trending_summarized_count,
+    )
+    return JobResult(
+        trending_count=len(trending_papers),
+        trending_added_count=trending_added_count,
+        trending_downloaded_count=trending_downloaded_count,
+        trending_summarized_count=trending_summarized_count,
+        daily_count=0,
+        downloaded_count=0,
+        summarized_count=0,
+    )
+
+
+def run_today_paper_job(root_dir, job_date=None, update_time=None):
+    root_dir = Path(root_dir)
+    job_date = job_date or today_iso()
+    if update_time is None:
+        update_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    proxies = download_papers.load_proxy_config()
+    crawl_delay = env_int("CRAWL_DELAY_SECONDS", crawler.DEFAULT_CRAWL_DELAY_SECONDS)
+    download_delay = env_int("DOWNLOAD_DELAY_SECONDS", download_papers.DEFAULT_DOWNLOAD_DELAY_SECONDS)
+    download_max_attempts = env_int("DOWNLOAD_MAX_ATTEMPTS", 3)
+    download_retry_delay = env_int(
+        "DOWNLOAD_RETRY_DELAY_SECONDS",
+        download_papers.DEFAULT_DOWNLOAD_RETRY_DELAY_SECONDS,
+    )
+    llm_delay = env_int("LLM_DELAY_SECONDS", read_papers.DEFAULT_LLM_DELAY_SECONDS)
+
+    daily_base_url = os.getenv("TRENDING_PAPER_DAILY_URL", crawler.DEFAULT_DAILY_PAPER_URL)
+    daily_url = crawler.daily_paper_url(daily_base_url, job_date)
+
+    LOGGER.info("Starting today paper job for %s", job_date)
     daily_papers = crawler.fetch_papers(daily_url, proxies=proxies, delay_seconds=crawl_delay)
     output_dir = download_papers.daily_output_dir(root_dir, job_date)
-    write_daily_paper_file(output_dir, daily_papers)
+    write_daily_paper_file(output_dir, daily_papers, update_time=update_time)
 
     downloaded_count = 0
     summarized_count = 0
@@ -178,20 +218,16 @@ def run_trending_paper_job(root_dir, job_date=None):
             summarized_count += 1
 
     LOGGER.info(
-        "Finished trending paper job: trending=%s added=%s trending_downloaded=%s trending_summarized=%s daily=%s downloaded=%s summarized=%s",
-        len(trending_papers),
-        trending_added_count,
-        trending_downloaded_count,
-        trending_summarized_count,
+        "Finished today paper job: daily=%s downloaded=%s summarized=%s",
         len(daily_papers),
         downloaded_count,
         summarized_count,
     )
     return JobResult(
-        trending_count=len(trending_papers),
-        trending_added_count=trending_added_count,
-        trending_downloaded_count=trending_downloaded_count,
-        trending_summarized_count=trending_summarized_count,
+        trending_count=0,
+        trending_added_count=0,
+        trending_downloaded_count=0,
+        trending_summarized_count=0,
         daily_count=len(daily_papers),
         downloaded_count=downloaded_count,
         summarized_count=summarized_count,

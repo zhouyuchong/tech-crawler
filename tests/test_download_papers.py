@@ -41,11 +41,21 @@ class DownloadPapersTest(unittest.TestCase):
                 Path(tmpdir) / "data" / "papers" / "20260701",
             )
 
-    def test_trending_output_dir_uses_trending_under_data_papers(self):
+    def test_trending_output_dir_uses_weekly_folder_under_data_papers(self):
+        import datetime
         with tempfile.TemporaryDirectory() as tmpdir:
+            # Test with a specific date
+            self.assertEqual(
+                download_papers.trending_output_dir(Path(tmpdir), "2026-07-07"),
+                Path(tmpdir) / "data" / "papers" / "trending" / "2026-W28",
+            )
+            # Test default job_date (today)
+            d = datetime.date.today()
+            year, week, _ = d.isocalendar()
+            expected_week_slug = f"{year}-W{week:02d}"
             self.assertEqual(
                 download_papers.trending_output_dir(Path(tmpdir)),
-                Path(tmpdir) / "data" / "papers" / "trending",
+                Path(tmpdir) / "data" / "papers" / "trending" / expected_week_slug,
             )
 
     def test_proxy_config_respects_use_proxy_switch(self):

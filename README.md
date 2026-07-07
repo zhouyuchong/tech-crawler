@@ -36,30 +36,40 @@ LLM_DELAY_SECONDS=5
 
 ## Usage
 
-Run the daily trending paper job:
+Run the weekly trending paper job:
 
 ```bash
 uv run tech-crawler --module trending_paper
 ```
 
-Backfill a specific date:
+Run the daily today paper job:
 
 ```bash
-uv run tech-crawler --module trending_paper --date 2026-07-01
+uv run tech-crawler --module today_paper
+```
+
+Backfill a specific date for daily papers:
+
+```bash
+uv run tech-crawler --module today_paper --date 2026-07-01
 ```
 
 Recommended crontab shape:
 
 ```cron
-0 8 * * * cd /path/to/tech_crawler && uv run tech-crawler --module trending_paper
+# Run trending papers weekly, today papers daily
+0 8 * * 1 cd /path/to/tech_crawler && uv run tech-crawler --module trending_paper
+0 8 * * * cd /path/to/tech_crawler && uv run tech-crawler --module today_paper
 ```
 
 ## Data Layout
 
-- `data/papers/trending/trending_paper.txt`: cumulative trending paper index.
-- `data/papers/YYYYMMDD/paper.txt`: daily paper metadata.
-- `data/papers/YYYYMMDD/*.pdf`: downloaded paper PDFs.
-- `data/papers/YYYYMMDD/*.md`: per-paper summaries.
+- `data/papers/trending/trending_paper.txt`: cumulative trending paper index (includes update time).
+- `data/papers/trending/YYYY-Www/*.pdf`: weekly trending paper PDFs.
+- `data/papers/trending/YYYY-Www/*.md`: weekly trending paper summaries.
+- `data/papers/YYYYMMDD/paper.txt`: daily paper metadata (includes update time).
+- `data/papers/YYYYMMDD/*.pdf`: downloaded daily paper PDFs.
+- `data/papers/YYYYMMDD/*.md`: per-paper daily summaries.
 - `data/logs/tech_crawler.log`: runtime logs.
 
 ## Tests

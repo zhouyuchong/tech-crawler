@@ -41,7 +41,8 @@ def parse_args(argv=None):
     parser.add_argument(
         "--module",
         default="trending_paper",
-        help="Crawler module to run. Currently supported: trending_paper.",
+        choices=["trending_paper", "today_paper"],
+        help="Crawler module to run. Supported: trending_paper, today_paper.",
     )
     parser.add_argument(
         "--date",
@@ -57,14 +58,17 @@ def main(argv=None):
     configure_logging(root_dir)
     args = parse_args(argv)
 
-    if args.module != "trending_paper":
+    if args.module not in ("trending_paper", "today_paper"):
         LOGGER.error("Unsupported module: %s", args.module)
         return 2
 
     try:
-        pipeline.run_trending_paper_job(root_dir, args.date)
+        if args.module == "trending_paper":
+            pipeline.run_trending_paper_job(root_dir, args.date)
+        elif args.module == "today_paper":
+            pipeline.run_today_paper_job(root_dir, args.date)
     except Exception:
-        LOGGER.exception("Trending paper job failed.")
+        LOGGER.exception("%s job failed.", args.module)
         return 1
 
     return 0

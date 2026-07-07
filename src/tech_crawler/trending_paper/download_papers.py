@@ -72,8 +72,14 @@ def daily_output_dir(root_dir, job_date):
     return Path(root_dir) / "data" / "papers" / date_slug
 
 
-def trending_output_dir(root_dir):
-    return Path(root_dir) / "data" / "papers" / "trending"
+def trending_output_dir(root_dir, job_date=None):
+    import datetime
+    if job_date is None:
+        job_date = datetime.date.today().isoformat()
+    d = datetime.date.fromisoformat(job_date)
+    year, week, _ = d.isocalendar()
+    week_slug = f"{year}-W{week:02d}"
+    return Path(root_dir) / "data" / "papers" / "trending" / week_slug
 
 
 def download_paper(
