@@ -137,6 +137,11 @@ def run_trending_paper_job(root_dir, job_date=None, update_time=None, db_path=No
         download_papers.DEFAULT_DOWNLOAD_RETRY_DELAY_SECONDS,
     )
     llm_delay = env_int("LLM_DELAY_SECONDS", read_papers.DEFAULT_LLM_DELAY_SECONDS)
+    llm_max_attempts = env_int("LLM_MAX_ATTEMPTS", read_papers.DEFAULT_LLM_MAX_ATTEMPTS)
+    llm_retry_delay = env_int(
+        "LLM_RETRY_DELAY_SECONDS",
+        read_papers.DEFAULT_LLM_RETRY_DELAY_SECONDS,
+    )
 
     trending_url = os.getenv("TRENDING_PAPER_URL", crawler.DEFAULT_TRENDING_PAPER_URL)
 
@@ -177,6 +182,8 @@ def run_trending_paper_job(root_dir, job_date=None, update_time=None, db_path=No
                 pdf_path,
                 delay_seconds=llm_delay,
                 proxies=proxies,
+                max_attempts=llm_max_attempts,
+                retry_delay_seconds=llm_retry_delay,
             )
         except (RuntimeError, requests.RequestException, OSError):
             LOGGER.exception("Failed to summarize trending paper: %s", pdf_path)
@@ -220,6 +227,11 @@ def run_today_paper_job(root_dir, job_date=None, update_time=None, db_path=None)
         download_papers.DEFAULT_DOWNLOAD_RETRY_DELAY_SECONDS,
     )
     llm_delay = env_int("LLM_DELAY_SECONDS", read_papers.DEFAULT_LLM_DELAY_SECONDS)
+    llm_max_attempts = env_int("LLM_MAX_ATTEMPTS", read_papers.DEFAULT_LLM_MAX_ATTEMPTS)
+    llm_retry_delay = env_int(
+        "LLM_RETRY_DELAY_SECONDS",
+        read_papers.DEFAULT_LLM_RETRY_DELAY_SECONDS,
+    )
 
     daily_base_url = os.getenv("TRENDING_PAPER_DAILY_URL", crawler.DEFAULT_DAILY_PAPER_URL)
     daily_url = crawler.daily_paper_url(daily_base_url, job_date)
@@ -262,6 +274,8 @@ def run_today_paper_job(root_dir, job_date=None, update_time=None, db_path=None)
                 pdf_path,
                 delay_seconds=llm_delay,
                 proxies=proxies,
+                max_attempts=llm_max_attempts,
+                retry_delay_seconds=llm_retry_delay,
             )
         except (RuntimeError, requests.RequestException, OSError):
             LOGGER.exception("Failed to summarize paper: %s", pdf_path)

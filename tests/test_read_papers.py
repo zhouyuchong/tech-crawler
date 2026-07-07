@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+import requests
 from tech_crawler.trending_paper import read_papers
 
 
@@ -121,6 +122,56 @@ class ReadPapersTest(unittest.TestCase):
             self.assertEqual(output.read_text(encoding="utf-8"), "new summary\n")
             call_llm.assert_called_once()
             sleep.assert_not_called()
+
+
+    def test_summarize_pdf_retries_on_http_error_and_succeeds_on_retry(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pdf_path = Path(tmpdir) / "Readable Paper.pdf"
+            pdf_path.write_bytes(b"%PDF")
+            with patch("tech_crawler.trending_paper.read_papers.extract_pdf_text", return_value="paper text"):
+                with patch(
+                    "tech_crawler.trending_paper.read_papers.call_llm",
+                    side_effect=[requests.RequestException("API limit"), "successful summary"],
+                ) as call_llm:
+                    with patch("tech_crawler.trending_paper.read_papers.time.sleep") as sleep:
+                        output = read_papers.summarize_pdf(
+                            pdf_path,
+                            api_key="key",
+                            base_url="https://example.com/v1",
+                            model="model",
+                            delay_seconds=5,
+                            max_attempts=2,
+                            retry_delay_seconds=3,
+                        )
+
+            self.assertEqual(output, Path(tmpdir) / "Readable Paper.md")
+            self.assertEqual(output.read_text(encoding="utf-8"), "successful summary\n")
+            self.assertEqual(call_llm.call_count, 2)
+            sleep.assert_any_call(3)
+            sleep.assert_any_call(5)
+
+    def test_summarize_pdf_re_raises_if_all_attempts_fail(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pdf_path = Path(tmpdir) / "Readable Paper.pdf"
+            pdf_path.write_bytes(b"%PDF")
+            with patch("tech_crawler.trending_paper.read_papers.extract_pdf_text", return_value="paper text"):
+                with patch(
+                    "tech_crawler.trending_paper.read_papers.call_llm",
+                    side_effect=requests.RequestException("API fatal error"),
+                ) as call_llm:
+                    with patch("tech_crawler.trending_paper.read_papers.time.sleep") as sleep:
+                        with self.assertRaises(requests.RequestException):
+                            read_papers.summarize_pdf(
+                                pdf_path,
+                                api_key="key",
+                                base_url="https://example.com/v1",
+                                model="model",
+                                max_attempts=3,
+                                retry_delay_seconds=2,
+                            )
+
+            self.assertEqual(call_llm.call_count, 3)
+            sleep.assert_any_call(2)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ LOGGER = logging.getLogger(__name__)
 DEFAULT_BASE_URL = "https://api.openai.com/v1"
 DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_LLM_DELAY_SECONDS = 5
+DEFAULT_LLM_MAX_ATTEMPTS = 3
+DEFAULT_LLM_RETRY_DELAY_SECONDS = 10
 MAX_CHARS = 60000
 
 
@@ -111,6 +113,8 @@ def summarize_pdf(
     model=None,
     delay_seconds=DEFAULT_LLM_DELAY_SECONDS,
     proxies=None,
+    max_attempts=DEFAULT_LLM_MAX_ATTEMPTS,
+    retry_delay_seconds=DEFAULT_LLM_RETRY_DELAY_SECONDS,
 ):
     pdf_path = Path(pdf_path)
     output_path = pdf_path.with_suffix(".md")
@@ -131,13 +135,35 @@ def summarize_pdf(
         return None
 
     prompt = build_prompt(pdf_path.name, text)
-    result = call_llm(
-        prompt,
-        api_key=api_key,
-        base_url=base_url,
-        model=model,
-        proxies=proxies,
-    )
+
+    result = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            LOGGER.info("Calling LLM to summarize %s (attempt %s/%s)", pdf_path.name, attempt, max_attempts)
+            result = call_llm(
+                prompt,
+                api_key=api_key,
+                base_url=base_url,
+                model=model,
+                proxies=proxies,
+            )
+            break
+        except requests.RequestException as exc:
+            if attempt >= max_attempts:
+                raise
+            LOGGER.warning(
+                "LLM call failed on attempt %s/%s, retrying after %s seconds: %s",
+                attempt,
+                max_attempts,
+                retry_delay_seconds,
+                exc,
+            )
+            if retry_delay_seconds > 0:
+                time.sleep(retry_delay_seconds)
+
+    if result is None:
+         return None
+
     output_path.write_text(result + "\n", encoding="utf-8")
     LOGGER.info("Saved paper summary: %s", output_path)
     if delay_seconds > 0:
