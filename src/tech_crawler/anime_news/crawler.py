@@ -18,7 +18,7 @@ def download_rss(output_path: Path, proxies=None):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     
     cmd = ["curl", "-sSL", FEED_URL, "-o", str(output_path)]
-    if proxies and "http" in proxies:
+    if proxies and proxies.get("http"):
         cmd.extend(["-x", proxies["http"]])
         
     try:
