@@ -91,7 +91,7 @@ Recommended crontab shape:
 - `data/papers/YYYYMMDD/*.md`: per-paper daily summaries.
 - `data/anime_news/anime_news.db`: local SQLite database containing anime news registry.
 - `data/anime_news/raw/*.xml`: raw downloaded anime news RSS feeds.
-- `data/reports/anime_news_report_*.md`: daily anime news summary reports.
+- `data/anime_news/anime_news_report.md`: latest anime news summary report.
 - `data/logs/tech_crawler.log`: runtime logs.
 
 ## Tests

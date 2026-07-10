@@ -42,7 +42,7 @@ def run_anime_news_job(root_dir, job_date=None, db_path=None):
     
     # 4. Summarize new records
     if new_records:
-        report_path = root_dir / "data" / "reports" / f"anime_news_report_{job_date}.md"
+        report_path = root_dir / "data" / "anime_news" / "anime_news_report.md"
         summarizer.summarize_news(
             new_records=new_records,
             output_path=report_path,
