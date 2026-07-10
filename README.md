@@ -50,6 +50,12 @@ Run the daily today paper job:
 uv run tech-crawler --module today_paper
 ```
 
+Run the daily anime news job:
+
+```bash
+uv run tech-crawler --module anime_news
+```
+
 Backfill a specific date for daily papers:
 
 ```bash
@@ -69,9 +75,10 @@ uv run tech-crawler --module today_paper --top 10
 Recommended crontab shape:
 
 ```cron
-# Run trending papers weekly, today papers daily
+# Run trending papers weekly, today papers daily, anime news daily
 0 8 * * 1 cd /path/to/tech_crawler && uv run tech-crawler --module trending_paper
 0 8 * * * cd /path/to/tech_crawler && uv run tech-crawler --module today_paper
+0 9 * * * cd /path/to/tech_crawler && uv run tech-crawler --module anime_news
 ```
 
 ## Data Layout
@@ -82,6 +89,9 @@ Recommended crontab shape:
 - `data/papers/YYYYMMDD/paper.txt`: daily paper metadata.
 - `data/papers/YYYYMMDD/*.pdf`: downloaded daily paper PDFs.
 - `data/papers/YYYYMMDD/*.md`: per-paper daily summaries.
+- `data/anime_news/anime_news.db`: local SQLite database containing anime news registry.
+- `data/anime_news/raw/*.xml`: raw downloaded anime news RSS feeds.
+- `data/reports/anime_news_report_*.md`: daily anime news summary reports.
 - `data/logs/tech_crawler.log`: runtime logs.
 
 ## Tests

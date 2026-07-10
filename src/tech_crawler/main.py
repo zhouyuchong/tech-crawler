@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 from tech_crawler.trending_paper import pipeline
 from tech_crawler.trending_paper.db import PaperDatabase
+from tech_crawler.anime_news import pipeline as anime_news_pipeline
 
 
 LOGGER = logging.getLogger(__name__)
@@ -42,8 +43,8 @@ def parse_args(argv=None):
     parser.add_argument(
         "--module",
         default="trending_paper",
-        choices=["trending_paper", "today_paper"],
-        help="Crawler module to run. Supported: trending_paper, today_paper.",
+        choices=["trending_paper", "today_paper", "anime_news"],
+        help="Crawler module to run. Supported: trending_paper, today_paper, anime_news.",
     )
     parser.add_argument(
         "--date",
@@ -65,7 +66,7 @@ def main(argv=None):
     configure_logging(root_dir)
     args = parse_args(argv)
 
-    if args.module not in ("trending_paper", "today_paper"):
+    if args.module not in ("trending_paper", "today_paper", "anime_news"):
         LOGGER.error("Unsupported module: %s", args.module)
         return 2
 
@@ -107,6 +108,8 @@ def main(argv=None):
             pipeline.run_trending_paper_job(root_dir, args.date)
         elif args.module == "today_paper":
             pipeline.run_today_paper_job(root_dir, args.date)
+        elif args.module == "anime_news":
+            anime_news_pipeline.run_anime_news_job(root_dir, args.date)
     except Exception:
         LOGGER.exception("%s job failed.", args.module)
         return 1
