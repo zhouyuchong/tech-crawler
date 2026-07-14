@@ -26,3 +26,7 @@ data/papers/**/paper.txt
 .idea/
 .vscode/
 *.swp
+
+# Google API Credentials
+credentials.json
+token.json
